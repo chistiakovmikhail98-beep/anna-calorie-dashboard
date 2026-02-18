@@ -6,6 +6,10 @@ import { Calculator } from './components/calculator/Calculator';
 import { FoodDiary } from './components/diary/FoodDiary';
 import { Progress } from './components/progress/Progress';
 import { Profile } from './components/profile/Profile';
+import { WellnessDiary } from './components/wellness/WellnessDiary';
+import { ActivityDiary } from './components/activity/ActivityDiary';
+import { MeasurementsPage } from './components/measurements/MeasurementsPage';
+import { Library } from './components/library/Library';
 
 const PageRouter: React.FC = () => {
   const { currentPage } = useUser();
@@ -16,6 +20,10 @@ const PageRouter: React.FC = () => {
     case 'diary': return <FoodDiary />;
     case 'progress': return <Progress />;
     case 'profile': return <Profile />;
+    case 'wellness': return <WellnessDiary />;
+    case 'activity': return <ActivityDiary />;
+    case 'measurements': return <MeasurementsPage />;
+    case 'library': return <Library />;
     default: return <Dashboard />;
   }
 };

@@ -1,16 +1,22 @@
 import React, { useMemo } from 'react';
 import { Card } from '../ui/Card';
 import { useUser } from '../../context/UserContext';
+import { DailyLog } from '../../types';
 
-export const DaySummary: React.FC = () => {
+interface Props {
+  log?: DailyLog;
+}
+
+export const DaySummary: React.FC<Props> = ({ log }) => {
   const { todayLog, calculations } = useUser();
+  const activeLog = log || todayLog;
 
   const totals = useMemo(() => {
     const all = [
-      ...todayLog.meals.breakfast,
-      ...todayLog.meals.lunch,
-      ...todayLog.meals.dinner,
-      ...todayLog.meals.snack,
+      ...activeLog.meals.breakfast,
+      ...activeLog.meals.lunch,
+      ...activeLog.meals.dinner,
+      ...activeLog.meals.snack,
     ];
     return {
       calories: Math.round(all.reduce((s, m) => s + m.calories, 0)),
@@ -18,7 +24,7 @@ export const DaySummary: React.FC = () => {
       fat: Math.round(all.reduce((s, m) => s + m.fat, 0)),
       carbs: Math.round(all.reduce((s, m) => s + m.carbs, 0)),
     };
-  }, [todayLog]);
+  }, [activeLog]);
 
   if (!calculations) return null;
 

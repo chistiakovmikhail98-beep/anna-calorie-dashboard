@@ -10,9 +10,10 @@ interface Props {
   onAdd: () => void;
   onAi: () => void;
   onRemove: (id: string) => void;
+  readOnly?: boolean;
 }
 
-export const MealSection: React.FC<Props> = ({ label, entries, onAdd, onAi, onRemove }) => {
+export const MealSection: React.FC<Props> = ({ label, entries, onAdd, onAi, onRemove, readOnly }) => {
   const totalCal = entries.reduce((s, e) => s + e.calories, 0);
 
   return (
@@ -22,22 +23,24 @@ export const MealSection: React.FC<Props> = ({ label, entries, onAdd, onAi, onRe
           <h4 className="font-medium text-gray-800">{label}</h4>
           <p className="text-xs text-gray-400">{totalCal} ккал</p>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={onAi}
-            className="w-9 h-9 rounded-full bg-olive/10 flex items-center justify-center hover:bg-olive hover:text-white text-olive transition-all"
-            title="ИИ-распознавание"
-          >
-            <Sparkles size={16} />
-          </button>
-          <button
-            onClick={onAdd}
-            className="w-9 h-9 rounded-full bg-cream flex items-center justify-center hover:bg-raspberry hover:text-white text-raspberry transition-all"
-            title="Из базы продуктов"
-          >
-            <Plus size={18} />
-          </button>
-        </div>
+        {!readOnly && (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onAi}
+              className="w-9 h-9 rounded-full bg-olive/10 flex items-center justify-center hover:bg-olive hover:text-white text-olive transition-all"
+              title="ИИ-распознавание"
+            >
+              <Sparkles size={16} />
+            </button>
+            <button
+              onClick={onAdd}
+              className="w-9 h-9 rounded-full bg-cream flex items-center justify-center hover:bg-raspberry hover:text-white text-raspberry transition-all"
+              title="Из базы продуктов"
+            >
+              <Plus size={18} />
+            </button>
+          </div>
+        )}
       </div>
 
       {entries.length > 0 ? (
@@ -50,9 +53,11 @@ export const MealSection: React.FC<Props> = ({ label, entries, onAdd, onAi, onRe
               </div>
               <div className="flex items-center gap-3 ml-3">
                 <span className="text-sm font-medium text-raspberry">{entry.calories}</span>
-                <button onClick={() => onRemove(entry.id)} className="text-gray-300 hover:text-raspberry transition-colors">
-                  <X size={14} />
-                </button>
+                {!readOnly && (
+                  <button onClick={() => onRemove(entry.id)} className="text-gray-300 hover:text-raspberry transition-colors">
+                    <X size={14} />
+                  </button>
+                )}
               </div>
             </div>
           ))}

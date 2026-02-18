@@ -1,7 +1,13 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { UserProfile, CalculationResult, DailyLog, Page } from '../types';
 import { calculateAll } from '../utils/formulas';
-import { loadProfile, saveProfile, getTodayLog, saveDailyLog } from '../utils/storage';
+import { loadProfile, saveProfile, getTodayLog, saveDailyLog, syncFromBot } from '../utils/storage';
+import { installDemoData, isDemoInstalled } from '../utils/demoData';
+
+// Auto-install demo data on first load
+if (!isDemoInstalled()) {
+  installDemoData();
+}
 
 interface UserContextType {
   profile: UserProfile | null;
@@ -40,6 +46,26 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const log = getTodayLog();
     setTodayLogState(log);
   }, [currentPage]);
+
+  // Sync from Telegram bot every 10 seconds
+  const syncRef = useRef(false);
+  useEffect(() => {
+    const doSync = async () => {
+      if (syncRef.current) return;
+      syncRef.current = true;
+      try {
+        const changed = await syncFromBot();
+        if (changed) {
+          setTodayLogState(getTodayLog());
+        }
+      } finally {
+        syncRef.current = false;
+      }
+    };
+    doSync();
+    const interval = setInterval(doSync, 10_000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <UserContext.Provider value={{ profile, setProfile, calculations, todayLog, setTodayLog, currentPage, setCurrentPage }}>
